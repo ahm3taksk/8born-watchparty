@@ -192,3 +192,15 @@ Bu bölümde projenin teknik altyapısı, geliştirme sürecinde karşılaşıla
 <div align="center">
   <sub>Eightborn V Topluluğu İçin Geliştirildi • 2026</sub>
 </div>
+
+A tactical multi-streaming web platform engineered for the Eightborn GTA V Roleplay community to monitor complex in-game operations, pursuits, and scenarios from multiple streamers simultaneously on a single screen.
+
+To prevent browser freezing and audio chaos caused by multiple open tabs, I built a zero-server-bandwidth streaming architecture that directly leverages Amazon IVS and CloudFront CDNs.
+
+### Key Features & Engineering Challenges Solved:
+- **Zero-Reload Stream Persistence:** Designed a fixed-DOM container architecture preserving `<video>` and Hls.js instances across layout changes (Theater Left, Theater Top, Equal Grid), preventing video rebuffering or freezing.
+- **Web Audio API Hardware Gain Boost (+150%):** Bypassed standard HTML5 100% volume limits using custom GainNodes for low-mic streamers, complete with strict lifecycle teardown to prevent audio context memory leaks.
+- **Zero Bandwidth Cost Streaming:** Next.js API routes securely proxy lightweight M3U8 manifest manifests, allowing high-bitrate video segments to flow directly from Amazon CDN to client browsers.
+- **Tactical Audio Mixer & Solo Listening:** Independent volume sliders, scroll-wheel volume adjustments, and one-key Solo listening (`1-6`) to mute all other streams instantly during radio callouts.
+- **Live Radar & Squad Management:** Real-time Kick API scraping for live status, viewer counts, and avatar synchronization with auto-hide filters for offline channels.
+- **Chromium Fullscreen Cursor Bug Workaround:** Fixed native Chromium fullscreen video pointer clipping through layered pointer-events isolation and automated 2.4s idle control fade.

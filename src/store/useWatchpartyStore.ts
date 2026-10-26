@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { LayoutMode, PlayerEngine, Squad, StreamerAudioState, StreamerInfo } from '@/lib/types';
 import { DEFAULT_SQUADS } from '@/lib/constants';
+import { fetchKickChannelClient, fetchMultipleKickChannelsClient } from '@/lib/kick-client';
 
 interface Toast {
   id: string;
@@ -186,11 +187,28 @@ export const useWatchpartyStore = create<WatchpartyState>()(
         const streamer = rawStreamer.toLowerCase().trim().replace('@', '');
         if (!streamer) return null;
 
+        // 1. Prioritize direct browser fetch (bypasses Cloudflare datacenter IP blocking on Vercel)
+        try {
+          const clientData = await fetchKickChannelClient(streamer);
+          if (clientData && (clientData.avatar || clientData.profilePicUrl || clientData.isLive)) {
+            set((state) => ({
+              liveStatuses: {
+                ...state.liveStatuses,
+                [streamer]: clientData,
+              },
+            }));
+            return clientData;
+          }
+        } catch (e) {
+          console.debug(`[Watchparty Store] Direct client fetch failed for @${streamer}:`, e);
+        }
+
+        // 2. Fallback to server route
         try {
           const res = await fetch(`/api/kick/channel/${encodeURIComponent(streamer)}`);
           if (res.ok) {
             const data: StreamerInfo = await res.json();
-            if (data && data.username) {
+            if (data && data.username && !data.error) {
               set((state) => ({
                 liveStatuses: {
                   ...state.liveStatuses,
@@ -201,7 +219,7 @@ export const useWatchpartyStore = create<WatchpartyState>()(
             }
           }
         } catch (e) {
-          console.warn(`[Watchparty Store] Channel profile fetch failed for @${streamer}:`, e);
+          console.warn(`[Watchparty Store] Server channel profile fetch failed for @${streamer}:`, e);
         }
         return null;
       },
@@ -520,23 +538,42 @@ export const useWatchpartyStore = create<WatchpartyState>()(
           const { squads } = get();
           const allStreamers = new Set<string>();
           squads.forEach((sq) => sq.streamers.forEach((s) => allStreamers.add(s.toLowerCase())));
-          const names = Array.from(allStreamers).join(',');
-          const url = names ? `/api/kick/channels?names=${encodeURIComponent(names)}` : '/api/kick/channels';
+          const names = Array.from(allStreamers);
+          if (names.length === 0) return;
+
+          // 1. Direct browser fetch from client (bypasses Cloudflare datacenter IP blocks on Vercel)
+          const clientData = await fetchMultipleKickChannelsClient(names);
+          if (clientData && Object.keys(clientData).length > 0) {
+            set((state) => ({
+              liveStatuses: {
+                ...state.liveStatuses,
+                ...clientData,
+              },
+            }));
+            return;
+          }
+
+          // 2. Fallback to server route if client-side direct fetch failed (e.g. adblocker)
+          const namesParam = names.join(',');
+          const url = `/api/kick/channels?names=${encodeURIComponent(namesParam)}`;
           const res = await fetch(url);
           if (res.ok) {
             const data: StreamerInfo[] = await res.json();
             const map: Record<string, StreamerInfo> = {};
             data.forEach((item) => {
-              if (item && item.username) {
+              // Never override real cached data with an error response!
+              if (item && item.username && !item.error) {
                 map[item.username.toLowerCase()] = item;
               }
             });
-            set((state) => ({
-              liveStatuses: {
-                ...state.liveStatuses,
-                ...map,
-              },
-            }));
+            if (Object.keys(map).length > 0) {
+              set((state) => ({
+                liveStatuses: {
+                  ...state.liveStatuses,
+                  ...map,
+                },
+              }));
+            }
           }
         } catch (e) {
           console.warn('[Watchparty Store] Failed to update live statuses:', e);

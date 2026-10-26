@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useWatchpartyStore } from '@/store/useWatchpartyStore';
 import { StreamerInfo } from '@/lib/types';
 import { DEFAULT_VERIFIED_STREAMERS } from '@/lib/constants';
+import { fetchMultipleKickChannelsClient } from '@/lib/kick-client';
 import { Radar, RefreshCw, X, Play, Plus, Search, UserCheck, Radio, Check, Link as LinkIcon } from 'lucide-react';
 
 type RadarTab = 'verified' | 'scanner' | 'manual';
@@ -38,18 +39,28 @@ export function RadarModal() {
   const fetchLiveStatus = async () => {
     setLoading(true);
     try {
-      const names = DEFAULT_VERIFIED_STREAMERS.map((s) => s.username).join(',');
-      const res = await fetch(`/api/kick/channels?names=${encodeURIComponent(names)}`);
-      if (res.ok) {
-        const data: StreamerInfo[] = await res.json();
-        // Sort live streamers first, then by viewer count
-        data.sort((a, b) => {
-          if (a.isLive && !b.isLive) return -1;
-          if (!a.isLive && b.isLive) return 1;
-          return (b.viewers || 0) - (a.viewers || 0);
-        });
-        setChannels(data);
+      const names = DEFAULT_VERIFIED_STREAMERS.map((s) => s.username);
+
+      // 1. Direct client fetch to bypass Vercel datacenter IP block
+      const clientData = await fetchMultipleKickChannelsClient(names);
+      let list = Object.values(clientData);
+
+      // 2. Fallback to server route if client fetch empty
+      if (list.length === 0) {
+        const namesParam = names.join(',');
+        const res = await fetch(`/api/kick/channels?names=${encodeURIComponent(namesParam)}`);
+        if (res.ok) {
+          list = await res.json();
+        }
       }
+
+      // Sort live streamers first, then by viewer count
+      list.sort((a, b) => {
+        if (a.isLive && !b.isLive) return -1;
+        if (!a.isLive && b.isLive) return 1;
+        return (b.viewers || 0) - (a.viewers || 0);
+      });
+      setChannels(list);
     } catch (e) {
       console.warn('Radar fetch failed', e);
     } finally {

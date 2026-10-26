@@ -42,6 +42,7 @@ export function PlayerCard({ streamer, isMainStage, index }: PlayerCardProps) {
     setChatOpen,
     autoMaxQuality,
     liveStatuses,
+    fetchStreamerProfile,
   } = useWatchpartyStore();
 
   const state = streamerStates[streamer] || {
@@ -65,6 +66,13 @@ export function PlayerCard({ streamer, isMainStage, index }: PlayerCardProps) {
   const [isCardFullscreen, setIsCardFullscreen] = useState(false);
   const hideControlsTimer = useRef<NodeJS.Timeout | null>(null);
   const lastMousePos = useRef<{ x: number; y: number }>({ x: -1, y: -1 });
+
+  // Fetch streamer profile if not yet cached in global store
+  useEffect(() => {
+    if (!liveStatuses[streamer.toLowerCase()]) {
+      fetchStreamerProfile(streamer);
+    }
+  }, [streamer, fetchStreamerProfile, liveStatuses]);
 
   // Sync fullscreen state & auto-hide on fullscreen change
   useEffect(() => {
@@ -109,7 +117,10 @@ export function PlayerCard({ streamer, isMainStage, index }: PlayerCardProps) {
     if (!video) return;
 
     setIsOffline(false);
-    const streamUrl = `/api/kick/stream/${encodeURIComponent(streamer)}/master.m3u8`;
+    // Prefer direct playback_url via playlist proxy if known, else server slug
+    const streamUrl = liveInfo?.playback_url
+      ? `/api/kick/playlist?url=${encodeURIComponent(liveInfo.playback_url)}`
+      : `/api/kick/stream/${encodeURIComponent(streamer)}/master.m3u8`;
 
     if (Hls.isSupported()) {
       const hls = new Hls({
@@ -193,7 +204,7 @@ export function PlayerCard({ streamer, isMainStage, index }: PlayerCardProps) {
       video.muted = masterMuted || state.muted;
       video.play().catch(() => {});
     }
-  }, [streamer, playerEngine, retryKey]);
+  }, [streamer, playerEngine, retryKey, liveInfo?.playback_url]);
 
   // Separate effect for adaptive bandwidth capping and quality selection without restarting HLS
   useEffect(() => {

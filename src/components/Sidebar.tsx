@@ -258,6 +258,7 @@ export function Sidebar() {
                   const isLive = liveInfo?.isLive ?? false;
                   const picUrl =
                     liveInfo?.profilePicUrl ||
+                    liveInfo?.avatar ||
                     `https://ui-avatars.com/api/?name=${encodeURIComponent(streamer)}&background=1e1e24&color=FFC526&size=80`;
 
                   return (
