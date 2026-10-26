@@ -1,0 +1,1348 @@
+@import "tailwindcss";
+
+:root {
+  /* EightbornV Design System Tokens */
+  --eb-primary: #FFC526;
+  --eb-primary-hover: #FFD76A;
+  --eb-primary-glow: rgba(255, 197, 38, 0.25);
+  --eb-canvas: #0E0E11;
+  --eb-surface: #151518;
+  --eb-surface-raised: #1E1E24;
+  --eb-surface-card: #0A0A0C;
+
+  --eb-ink: #F3F4F2;
+  --eb-body: #CECABD;
+  --eb-muted: #AAAAB2;
+  --eb-faint: #71717E;
+
+  --eb-border: rgba(255, 255, 255, 0.08);
+  --eb-border-gold: rgba(184, 160, 104, 0.4);
+  --eb-border-gold-bright: #FFC526;
+
+  --header-height: 52px;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  background-color: var(--eb-canvas);
+  color: var(--eb-ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow: hidden;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: var(--eb-canvas);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--eb-primary);
+}
+
+/* App Wrapper */
+.watchparty-app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* =========================================================================
+   HEADER & HUD CONTROLS (HIGH PERFORMANCE, ZERO JANK)
+   ========================================================================= */
+.hud-header {
+  height: var(--header-height);
+  min-height: var(--header-height);
+  background: #141417;
+  border-bottom: 1px solid var(--eb-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  z-index: 40;
+  position: relative;
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}
+
+.brand-crest {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-text-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-title {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--eb-ink);
+  line-height: 1.1;
+}
+
+.brand-subtitle {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--eb-primary);
+}
+
+/* Live Clock & Indicator */
+.live-clock-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #1b1b20;
+  border: 1px solid var(--eb-border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--eb-body);
+}
+
+.pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+.pulse-dot.live,
+.pulse-dot:not(.offline) {
+  background-color: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+.pulse-dot.offline {
+  background-color: #64748b !important;
+  box-shadow: none !important;
+  opacity: 0.65;
+  animation: none !important;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 6px #22c55e;
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    box-shadow: 0 0 10px #22c55e, 0 0 14px rgba(34, 197, 94, 0.4);
+    opacity: 0.85;
+  }
+}
+
+/* Squad Tabs Navigation */
+.squad-tabs-bar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  overflow-x: auto;
+  padding: 2px 4px;
+}
+
+.squad-tab-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #18181d;
+  border: 1px solid var(--eb-border);
+  color: var(--eb-muted);
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.squad-tab-pill:hover {
+  background: #22222a;
+  color: var(--eb-ink);
+}
+
+.squad-tab-pill.active {
+  background: #25252e;
+  color: var(--eb-ink);
+  border-color: var(--eb-border-gold);
+}
+
+.squad-color-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.squad-count-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 1px 5px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 3px;
+  color: var(--eb-faint);
+}
+
+.squad-tab-pill.active .squad-count-badge {
+  color: var(--eb-primary);
+  background: rgba(255, 197, 38, 0.15);
+}
+
+/* HUD Controls Right */
+.hud-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  padding: 0 9px;
+  border-radius: 4px;
+  border: 1px solid var(--eb-border);
+  background: #18181d;
+  color: var(--eb-muted);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  gap: 5px;
+}
+
+.action-btn:hover {
+  background: #24242c;
+  color: var(--eb-ink);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.action-btn.active {
+  background: rgba(255, 197, 38, 0.15);
+  color: var(--eb-primary);
+  border-color: var(--eb-border-gold);
+}
+
+.action-btn-gold {
+  background: var(--eb-primary);
+  color: #0E0E11;
+  border: none;
+  font-weight: 700;
+}
+
+.action-btn-gold:hover {
+  background: var(--eb-primary-hover);
+  color: #000;
+}
+
+/* Master Volume Widget */
+.master-volume-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #18181d;
+  border: 1px solid var(--eb-border);
+  border-radius: 4px;
+  padding: 3px 8px;
+}
+
+.hud-slider {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 55px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.hud-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--eb-primary);
+  cursor: pointer;
+}
+
+/* Layout Selector */
+.layout-selector {
+  display: flex;
+  align-items: center;
+  background: #18181d;
+  border: 1px solid var(--eb-border);
+  border-radius: 4px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.layout-pill-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 24px;
+  border-radius: 3px;
+  border: none;
+  background: transparent;
+  color: var(--eb-faint);
+  cursor: pointer;
+}
+
+.layout-pill-btn:hover {
+  color: var(--eb-ink);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.layout-pill-btn.active {
+  color: var(--eb-primary);
+  background: rgba(255, 197, 38, 0.15);
+}
+
+/* =========================================================================
+   MAIN STAGE CONTAINER & FLAT GRID (ZERO RELOAD)
+   ========================================================================= */
+.main-stage-container {
+  width: 100vw;
+  height: calc(100vh - var(--header-height));
+  display: block;
+  position: relative;
+  overflow: hidden;
+  background: var(--eb-canvas);
+}
+
+.players-flat-grid {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* =========================================================================
+   PLAYER CARD (EIGHTBORN CINEMATIC NOIR & 60 FPS)
+   ========================================================================= */
+.player-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  background: var(--eb-surface-card);
+  border: 1px solid var(--eb-border);
+  border-radius: 6px;
+  overflow: hidden;
+  contain: layout style;
+  container-type: size;
+  container-name: playercard;
+}
+
+.player-card.is-main {
+  border-color: var(--eb-border-gold);
+}
+
+.player-card.is-solo {
+  border-color: #22c55e !important;
+  box-shadow: 0 0 16px rgba(34, 197, 94, 0.35) !important;
+}
+
+/* Video Stage Area: 100% FULL-BLEED & NEVER CROPPED */
+.card-video-wrap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 10;
+  cursor: default !important;
+}
+
+.card-video-wrap video {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  min-width: 0;
+  min-height: 0;
+  object-fit: contain !important; /* CRITICAL: Never crop or stretch the live video! */
+  border: none;
+  background: #000;
+  image-rendering: -webkit-optimize-contrast;
+  transform: translateZ(0);
+  pointer-events: none !important; /* CRITICAL: Prevents Chromium from hiding the cursor in fullscreen! */
+  cursor: default !important;
+}
+
+.card-video-wrap video::-webkit-media-controls {
+  display: none !important;
+}
+
+.card-video-wrap video::-webkit-media-controls-enclosure {
+  display: none !important;
+}
+
+.card-video-wrap iframe {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  min-width: 0;
+  min-height: 0;
+  object-fit: contain !important;
+  border: none;
+  background: #000;
+  transform: translateZ(0);
+  cursor: default !important;
+}
+
+/* Card Top Badge - Smoothly auto-hides on idle */
+.card-top-bar {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 25;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.top-badge-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(14, 14, 17, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--eb-ink);
+  pointer-events: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.btn-make-focus {
+  background: rgba(21, 21, 24, 0.92);
+  border: 1px solid var(--eb-border-gold);
+  color: var(--eb-primary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border-radius: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  transition: all 0.15s ease;
+}
+
+.btn-make-focus:hover {
+  background: var(--eb-primary);
+  color: #0E0E11;
+  box-shadow: 0 0 10px var(--eb-primary);
+}
+
+/* Card Bottom Controls Bar - Overlay at bottom, auto-hides when mouse is idle */
+.card-controls-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  min-height: 40px;
+  background: linear-gradient(to top, rgba(10, 10, 14, 0.96) 0%, rgba(10, 10, 14, 0.82) 75%, transparent 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  z-index: 25;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(100%);
+  overflow-x: auto;
+  scrollbar-width: none;
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-controls-bar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Reveal Controls on Mouse Activity (Auto-hides cleanly in fullscreen & idle) */
+.player-card.show-controls .card-controls-bar {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  pointer-events: auto !important;
+}
+
+.player-card.show-controls .card-top-bar {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  pointer-events: auto !important;
+}
+
+/* In Fullscreen: Top Bar remains hidden for clean cinematic view */
+.player-card:fullscreen .card-top-bar,
+.player-card.is-card-fullscreen .card-top-bar {
+  display: none !important;
+}
+
+.ctrl-group {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.btn-ctrl {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  padding: 0 7px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(24, 24, 30, 0.88);
+  backdrop-filter: blur(4px);
+  color: var(--eb-ink);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  gap: 4px;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-ctrl:hover {
+  background: #2e2e3a;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.btn-ctrl.btn-solo.active {
+  background: #22c55e;
+  color: #000;
+  font-weight: 800;
+  border-color: #22c55e;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
+}
+
+.btn-ctrl.btn-boost.active {
+  background: #eab308;
+  color: #000;
+  font-weight: 800;
+  border-color: #eab308;
+  box-shadow: 0 0 10px rgba(234, 179, 8, 0.6);
+}
+
+/* =========================================================================
+   FULLSCREEN MODE
+   ========================================================================= */
+.player-card:fullscreen,
+.player-card.is-card-fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: #000 !important;
+}
+
+.player-card:fullscreen .card-controls-bar,
+.player-card.is-card-fullscreen .card-controls-bar {
+  height: 48px;
+  padding: 0 16px;
+}
+
+/* =========================================================================
+   DRAWERS (CHAT & SIDEBAR)
+   ========================================================================= */
+.side-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 50;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.side-drawer-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.tactical-drawer {
+  position: fixed;
+  top: 0;
+  right: -480px;
+  width: 440px;
+  max-width: 92vw;
+  height: 100vh;
+  background: #121215;
+  border-left: 1px solid var(--eb-border-gold);
+  box-shadow: -10px 0 35px rgba(0, 0, 0, 0.85);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  visibility: hidden;
+  transition: right 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tactical-drawer.open {
+  right: 0;
+  visibility: visible;
+}
+
+.drawer-header {
+  height: var(--header-height);
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--eb-border);
+}
+
+.drawer-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--eb-ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.drawer-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* =========================================================================
+   MAIN VIEWPORT & FLEX SLIDING CHAT DRAWER
+   (Matches Extension Architecture: Chat compresses stage, never overlays)
+   ========================================================================= */
+.main-viewport {
+  display: flex;
+  flex: 1 1 0%;
+  width: 100vw;
+  height: calc(100vh - var(--header-height));
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.main-stage-container {
+  flex: 1 1 0%;
+  min-width: 0;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), flex 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chat-drawer {
+  position: relative;
+  width: 0;
+  min-width: 0;
+  height: 100%;
+  background: #0d0d10;
+  border-left: none;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), min-width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chat-drawer.open {
+  width: 340px;
+  min-width: 340px;
+  border-left: 1px solid var(--eb-border);
+}
+
+.chat-tabs-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  background: #141418;
+  border-bottom: 1px solid var(--eb-border);
+  overflow-x: auto;
+}
+
+.chat-tab-btn {
+  padding: 3px 8px;
+  border-radius: 3px;
+  border: 1px solid var(--eb-border);
+  background: transparent;
+  color: var(--eb-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.chat-tab-btn.active {
+  background: var(--eb-primary);
+  color: #0E0E11;
+  border-color: var(--eb-primary);
+  font-weight: 700;
+}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+.modal-box {
+  width: 100%;
+  max-width: 580px;
+  background: #121215;
+  border: 1px solid var(--eb-border-gold);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+}
+
+/* Toast Container */
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 999;
+  pointer-events: none;
+}
+
+.toast-pill {
+  background: #15151a;
+  border: 1px solid var(--eb-border-gold);
+  border-left: 3px solid var(--eb-primary);
+  padding: 7px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--eb-ink);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.8);
+}
+
+/* =========================================================================
+   CINEMATIC SPLASH SCREEN & BRANDED LOADER
+   ========================================================================= */
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #0A0A0D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s ease;
+  overflow: hidden;
+  pointer-events: all;
+}
+
+.splash-screen.fade-out {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.splash-ambient-aura {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 197, 38, 0.16) 0%, rgba(255, 197, 38, 0.04) 45%, transparent 70%);
+  filter: blur(60px);
+  animation: splashPulse 3s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes splashPulse {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  100% { transform: scale(1.15); opacity: 1; }
+}
+
+.splash-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 440px;
+  padding: 24px;
+}
+
+.splash-logo-wrap {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  filter: drop-shadow(0 0 24px rgba(255, 197, 38, 0.45));
+}
+
+.splash-logo-img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  animation: logoFloat 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes logoFloat {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-4px); }
+}
+
+.splash-text-group {
+  margin-bottom: 22px;
+}
+
+.splash-title {
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  color: #F3F4F2;
+  margin-bottom: 4px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+.splash-subtitle {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: var(--eb-primary);
+  font-weight: 600;
+}
+
+.splash-progress-track {
+  width: 220px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 14px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.splash-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #FFC526 0%, #FFE082 100%);
+  border-radius: 999px;
+  box-shadow: 0 0 12px rgba(255, 197, 38, 0.8);
+  transition: width 0.18s ease-out;
+}
+
+.splash-status-text {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--eb-muted);
+}
+
+/* =========================================================================
+   CINEMATIC EIGHTBORN OFFLINE STREAM CARD
+   ========================================================================= */
+.offline-stage-card {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0A0A0D;
+  overflow: hidden;
+  user-select: none;
+}
+
+.offline-stage-ambient {
+  position: absolute;
+  inset: -20px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(40px) brightness(0.25) saturate(1.2);
+  transform: scale(1.1);
+  pointer-events: none;
+}
+
+.offline-stage-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(14, 14, 17, 0.55) 0%, rgba(10, 10, 13, 0.95) 85%);
+  pointer-events: none;
+}
+
+.offline-stage-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 14px 44px 14px; /* Essential safe margin: clears top bar (38px) & bottom controls (40px) */
+  max-width: 95%;
+  max-height: 100%;
+  gap: 8px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.offline-avatar-wrapper {
+  position: relative;
+  width: 68px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.offline-avatar-ring {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 197, 38, 0.7);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.9), 0 0 14px rgba(255, 197, 38, 0.25);
+  overflow: hidden;
+  background: #1A1A22;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.offline-avatar-img {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+.offline-avatar-badge {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 13px;
+  height: 13px;
+  border: 2px solid #0E0E11;
+  z-index: 5;
+}
+
+.offline-streamer-name {
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #F3F4F2;
+  letter-spacing: 0.05em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+}
+
+.offline-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #F3F4F2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+}
+
+.offline-stream-title {
+  font-size: 11px;
+  color: var(--eb-body);
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.85;
+}
+
+.offline-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  flex-wrap: nowrap;
+}
+
+.offline-btn {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  height: 28px !important;
+  padding: 0 12px !important;
+  border-radius: 4px !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+  background: #1C1C22 !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #F3F4F2 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) !important;
+  transition: all 0.18s ease;
+}
+
+.offline-btn:hover {
+  background: #2A2A34 !important;
+  border-color: var(--eb-primary) !important;
+  color: var(--eb-primary) !important;
+  box-shadow: 0 0 12px rgba(255, 197, 38, 0.3) !important;
+}
+
+.offline-btn-gold {
+  background: rgba(255, 197, 38, 0.15) !important;
+  border-color: var(--eb-primary) !important;
+  color: var(--eb-primary) !important;
+}
+
+.offline-btn-gold:hover {
+  background: var(--eb-primary) !important;
+  color: #0E0E11 !important;
+  box-shadow: 0 0 14px rgba(255, 197, 38, 0.6) !important;
+}
+
+/* =========================================================================
+   COMPANION / SIDE / BOTTOM STREAM COMPACT SCALING
+   ========================================================================= */
+.player-card.is-companion .offline-stage-content {
+  padding: 32px 8px 36px 8px;
+  gap: 5px;
+}
+
+.player-card.is-companion .offline-avatar-wrapper {
+  width: 48px;
+  height: 48px;
+}
+
+.player-card.is-companion .offline-avatar-ring {
+  width: 48px;
+  height: 48px;
+  border-width: 1.5px;
+}
+
+.player-card.is-companion .offline-avatar-badge {
+  width: 11px;
+  height: 11px;
+}
+
+.player-card.is-companion .offline-streamer-name {
+  font-size: 12px;
+}
+
+.player-card.is-companion .offline-status-pill {
+  font-size: 9px;
+  padding: 2px 8px;
+}
+
+.player-card.is-companion .offline-stream-title {
+  display: none !important;
+}
+
+.player-card.is-companion .offline-actions-row {
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.player-card.is-companion .offline-btn {
+  height: 24px !important;
+  padding: 0 9px !important;
+  font-size: 10px !important;
+  gap: 4px !important;
+}
+
+/* =========================================================================
+   CONTAINER QUERIES FOR DYNAMIC RESPONSIVE FIT ACROSS ALL SCREEN SIZES
+   ========================================================================= */
+
+/* Container Query: Height <= 270px (e.g. Theater Top companion bar, 6-8 grid equal) */
+@container playercard (max-height: 270px) {
+  .offline-stage-content {
+    padding: 30px 8px 34px 8px !important;
+    gap: 4px !important;
+  }
+
+  .offline-avatar-wrapper {
+    width: 42px !important;
+    height: 42px !important;
+  }
+
+  .offline-avatar-ring {
+    width: 42px !important;
+    height: 42px !important;
+    border-width: 1.5px !important;
+  }
+
+  .offline-avatar-badge {
+    width: 10px !important;
+    height: 10px !important;
+  }
+
+  .offline-streamer-name {
+    font-size: 11px !important;
+  }
+
+  .offline-status-pill {
+    font-size: 8.5px !important;
+    padding: 2px 6px !important;
+  }
+
+  .offline-stream-title {
+    display: none !important;
+  }
+
+  .offline-actions-row {
+    gap: 5px !important;
+    margin-top: 2px !important;
+  }
+
+  .offline-btn {
+    height: 22px !important;
+    padding: 0 8px !important;
+    font-size: 9.5px !important;
+    gap: 3px !important;
+  }
+}
+
+/* Container Query: Ultra Short Height <= 190px (e.g. 4 side companions in theater-left) */
+@container playercard (max-height: 190px) {
+  .offline-stage-content {
+    padding: 24px 4px 26px 4px !important;
+    gap: 3px !important;
+  }
+
+  .offline-avatar-wrapper {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .offline-avatar-ring {
+    width: 32px !important;
+    height: 32px !important;
+    border-width: 1px !important;
+  }
+
+  .offline-status-pill {
+    display: none !important;
+  }
+
+  .offline-stream-title {
+    display: none !important;
+  }
+
+  .offline-actions-row {
+    margin-top: 1px !important;
+  }
+
+  .offline-btn {
+    height: 20px !important;
+    padding: 0 6px !important;
+    font-size: 9px !important;
+  }
+}
+
+/* Container Query: Width <= 290px (Narrow side columns) */
+@container playercard (max-width: 290px) {
+  .offline-actions-row {
+    gap: 4px !important;
+  }
+
+  .offline-btn {
+    padding: 0 7px !important;
+    font-size: 9.5px !important;
+  }
+
+  .offline-stream-title {
+    max-width: 200px !important;
+  }
+}
+
+/* =========================================================================
+   FULLSCREEN THEATER AUTO-HIDE HUD
+   ========================================================================= */
+.fullscreen-top-sensor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 18px;
+  z-index: 99;
+  cursor: pointer;
+  background: transparent;
+}
+
+:fullscreen .main-viewport,
+.watchparty-app:has(.hud-header.is-fullscreen-header) .main-viewport {
+  height: 100vh !important;
+}
+
+:fullscreen .hud-header,
+.hud-header.is-fullscreen-header {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  transform: translateY(-100%) !important;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9) !important;
+  z-index: 100 !important;
+  background: rgba(20, 20, 23, 0.96) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
+:fullscreen .hud-header:hover,
+:fullscreen .hud-header.header-visible,
+.hud-header.is-fullscreen-header:hover,
+.hud-header.is-fullscreen-header.header-visible {
+  transform: translateY(0) !important;
+}
+
+/* =========================================================================
+   UNIVERSAL CURSOR VISIBILITY (WINDOWED & FULLSCREEN MODES)
+   ========================================================================= */
+html,
+body,
+:fullscreen,
+::backdrop,
+:fullscreen .main-viewport,
+:fullscreen .watchparty-app,
+:fullscreen .player-card,
+:fullscreen .card-video-wrap,
+:fullscreen .offline-stage-card,
+.player-card,
+.player-card:fullscreen,
+.player-card.is-card-fullscreen,
+.card-video-wrap,
+.offline-stage-card {
+  cursor: default !important;
+}
+
+/* Ensure all interactive controls retain pointer cursor everywhere */
+button,
+a,
+input,
+select,
+label,
+.btn-ctrl,
+.action-btn,
+.offline-btn,
+.btn-make-focus,
+.pulse-dot,
+[role="button"],
+:fullscreen button,
+:fullscreen a,
+:fullscreen input,
+:fullscreen select,
+:fullscreen label,
+:fullscreen .btn-ctrl,
+:fullscreen .action-btn,
+:fullscreen .offline-btn,
+:fullscreen .btn-make-focus,
+:fullscreen [role="button"] {
+  cursor: pointer !important;
+}
+
+
